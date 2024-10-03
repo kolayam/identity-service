@@ -28,11 +28,11 @@ spring:
   datasource:
     name: identitydb
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:identityDB}?ApplicationName=identity-service${APPLICATION_NAME_SUFFIX:}
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:identityDB}?ApplicationName=identity-service${APPLICATION_NAME_SUFFIX:}${POSTGRES_PARAMS:}
     username: ${POSTGRES_USER:root}
     password: ${POSTGRES_PASSWORD:changeme}
     binarycontentdb:
-      url: jdbc:postgresql://${BINARY_CONTENT_DB_HOST:localhost}:${BINARY_CONTENT_DB_PORT:5432}/${BINARY_CONTENT_DB_NAME:binarycontentdb}?currentSchema=public
+      url: jdbc:postgresql://${BINARY_CONTENT_DB_HOST:localhost}:${BINARY_CONTENT_DB_PORT:5432}/${BINARY_CONTENT_DB_NAME:binarycontentdb}?currentSchema=public${BINARY_CONTENT_DB_PARAMS:}
       username: ${BINARY_CONTENT_DB_USERNAME:postgres}
       password: ${BINARY_CONTENT_DB_PASSWORD:nimble}
       driverClassName: org.postgresql.Driver

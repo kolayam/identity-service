@@ -36,6 +36,20 @@ public class StripeClient {
         AccountCreateParams params =
                 AccountCreateParams.builder()
                         .setType(AccountCreateParams.Type.EXPRESS)
+                        .setCountry("GB")
+                                        .setCapabilities(
+                        AccountCreateParams.Capabilities.builder()
+                                .setCardPayments(
+                                        AccountCreateParams.Capabilities.CardPayments.builder()
+                                                .setRequested(true)
+                                                .build()
+                                )
+                                .setTransfers(
+                                        AccountCreateParams.Capabilities.Transfers.builder()
+                                                .setRequested(true)
+                                                .build()
+                                ).build()
+                        )
                         .build();
 
         Account account = Account.create(params);

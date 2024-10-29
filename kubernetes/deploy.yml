@@ -125,21 +125,3 @@ spec:
             value: "https://www.kolayam.co.uk/#/user-mgmt/company-settings"
           - name: STRIPE_RETURN_URL
             value: "https://www.kolayam.co.uk/#/user-mgmt/company-settings"
-
----
-
-kind: Service
-metadata:
-  name: identity-service
-  labels:
-    app: nimble-platform
-    name: identity-service
-spec:
-  ports:
-    - name: http
-      protocol: TCP
-      port: 9096
-      targetPort: 9096
-  selector:
-    app: nimble-platform
-    name: identity-service

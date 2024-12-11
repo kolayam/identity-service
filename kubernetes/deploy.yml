@@ -125,3 +125,9 @@ spec:
             value: "https://www.kolayam.co.uk/#/user-mgmt/company-settings"
           - name: STRIPE_RETURN_URL
             value: "https://www.kolayam.co.uk/#/user-mgmt/company-settings"
+        resources:
+          requests:
+            cpu: 200m
+            memory: 512Mi
+          limits:
+            memory: 1024Mi

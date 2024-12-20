@@ -1,21 +1,29 @@
 package eu.nimble.core.infrastructure.identity.clients;
 
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import com.stripe.Stripe;
 import com.stripe.exception.PermissionException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Account;
 import com.stripe.model.AccountLink;
 import com.stripe.model.LoginLink;
+import com.stripe.model.checkout.Session;
 import com.stripe.param.AccountCreateParams;
 import com.stripe.param.AccountLinkCreateParams;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-import java.util.Map;
+import com.stripe.param.checkout.SessionCreateParams;
 
 @Component
 public class StripeClient {
+    
+    private static final Logger logger = LoggerFactory.getLogger(StripeClient.class);
 
     @Value("${nimble.stripe.secretKey}")
     private String stripeSecretKey;
@@ -25,6 +33,10 @@ public class StripeClient {
 
     @Value("${nimble.stripe.returnUrl}")
     private String stripeReturnUrl;
+
+    @Value("${nimble.frontend.url}")
+    private String frontendUrl;
+
 
     @PostConstruct
     public void init() {
@@ -102,5 +114,36 @@ public class StripeClient {
             return login_link.getUrl();
         }
         return null;
+    }
+
+
+    public String createCheckout(String priceId){
+        String YOUR_DOMAIN = this.frontendUrl;
+            SessionCreateParams params = SessionCreateParams.builder()
+                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                    .setSuccessUrl(YOUR_DOMAIN + "/success.html")
+                    .setCancelUrl(YOUR_DOMAIN + "/cancel.html")
+                    .setAutomaticTax(
+                            SessionCreateParams.AutomaticTax.builder()
+                                    .setEnabled(true)
+                                    .build())
+                    .addLineItem(
+                            SessionCreateParams.LineItem.builder()
+                                    .setQuantity(1L)
+                                    // Provide the exact Price ID (for example, pr_1234) of the product you want to
+                                    // sell
+                                    .setPrice(priceId)
+                                    .build())
+                    .build();
+            Session session;
+            try {
+                session = Session.create(params);
+                return session.getUrl();
+
+            } catch (StripeException e) {
+                logger.error("Unexpected error while create checkout session:", e);
+                throw new RuntimeException(e);
+            }
+
     }
 }

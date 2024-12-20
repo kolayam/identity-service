@@ -1,5 +1,28 @@
 package eu.nimble.core.infrastructure.identity.system;
 
+import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.COMPANY_ADMIN;
+import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.INITIAL_REPRESENTATIVE;
+import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.LEGAL_REPRESENTATIVE;
+import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.PLATFORM_MANAGER;
+import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.PUBLISHER;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import eu.nimble.core.infrastructure.identity.clients.StripeClient;
 import eu.nimble.core.infrastructure.identity.entity.stripe.AccountLink;
 import eu.nimble.core.infrastructure.identity.repository.PartyRepository;
@@ -9,20 +32,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
-
-import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.*;
 
 @Controller
 public class StripeController {
@@ -36,19 +45,21 @@ public class StripeController {
     @Autowired
     private IdentityService identityService;
 
+
     @ApiOperation(value = "", notes = "Connects the given party to Stripe")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Connected the party to Stripe successfully"),
             @ApiResponse(code = 403, message = "Invalid role"),
             @ApiResponse(code = 500, message = "Unexpected error while connecting the party to Stripe")
     })
-    @RequestMapping(value = "/account",
-            method = RequestMethod.POST)
-    public ResponseEntity connectStripe(@ApiParam(value = "Id of account if exists") @RequestParam(value = "id", required = false) String accountId,
-                                        @ApiParam(value = "Id of company for which the account is to be created") @RequestParam(value = "partyId", required = false) Long partyId,
-                                        @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
+    @RequestMapping(value = "/account", method = RequestMethod.POST)
+    public ResponseEntity connectStripe(
+            @ApiParam(value = "Id of account if exists") @RequestParam(value = "id", required = false) String accountId,
+            @ApiParam(value = "Id of company for which the account is to be created") @RequestParam(value = "partyId", required = false) Long partyId,
+            @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
         try {
-            if (!identityService.hasAnyRole(bearer, COMPANY_ADMIN, LEGAL_REPRESENTATIVE, PLATFORM_MANAGER, INITIAL_REPRESENTATIVE, PUBLISHER))
+            if (!identityService.hasAnyRole(bearer, COMPANY_ADMIN, LEGAL_REPRESENTATIVE, PLATFORM_MANAGER,
+                    INITIAL_REPRESENTATIVE, PUBLISHER))
                 return new ResponseEntity<>("You are not allowed to connect stripe", HttpStatus.FORBIDDEN);
 
             AccountLink accountLink;
@@ -69,7 +80,8 @@ public class StripeController {
             return ResponseEntity.ok(accountLink);
         } catch (Exception e) {
             logger.error("Unexpected error while connecting the party to Stripe:", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error while connecting the party to Stripe");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error while connecting the party to Stripe");
         }
     }
 
@@ -79,18 +91,20 @@ public class StripeController {
             @ApiResponse(code = 403, message = "Invalid role."),
             @ApiResponse(code = 500, message = "Unexpected error while retrieving the login link")
     })
-    @RequestMapping(value = "/account/login-link",
-            method = RequestMethod.GET)
-    public ResponseEntity getAccountLoginLink(@ApiParam(value = "Id of account for which the login link is created.", required = true) @RequestParam(value = "id", required = true) String id,
-                                              @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
+    @RequestMapping(value = "/account/login-link", method = RequestMethod.GET)
+    public ResponseEntity getAccountLoginLink(
+            @ApiParam(value = "Id of account for which the login link is created.", required = true) @RequestParam(value = "id", required = true) String id,
+            @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
         try {
-            if (!identityService.hasAnyRole(bearer, COMPANY_ADMIN, LEGAL_REPRESENTATIVE, PLATFORM_MANAGER, INITIAL_REPRESENTATIVE, PUBLISHER))
+            if (!identityService.hasAnyRole(bearer, COMPANY_ADMIN, LEGAL_REPRESENTATIVE, PLATFORM_MANAGER,
+                    INITIAL_REPRESENTATIVE, PUBLISHER))
                 return new ResponseEntity<>("You are not allowed to retrieve a login link", HttpStatus.FORBIDDEN);
 
             return ResponseEntity.ok(this.stripeClient.getAccountLoginLink(id));
         } catch (Exception e) {
             logger.error("Unexpected error while retrieving the login link:", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error while retrieving the login link");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error while retrieving the login link");
         }
     }
 
@@ -100,12 +114,13 @@ public class StripeController {
             @ApiResponse(code = 403, message = "Invalid role"),
             @ApiResponse(code = 500, message = "Unexpected error while deleting Stripe account")
     })
-    @RequestMapping(value = "/account",
-            method = RequestMethod.DELETE)
-    public ResponseEntity deleteAccount(@ApiParam(value = "Id of account to be deleted.", required = true) @RequestParam(value = "id", required = true) String id,
-                                        @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
+    @RequestMapping(value = "/account", method = RequestMethod.DELETE)
+    public ResponseEntity deleteAccount(
+            @ApiParam(value = "Id of account to be deleted.", required = true) @RequestParam(value = "id", required = true) String id,
+            @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
         try {
-            if (!identityService.hasAnyRole(bearer, COMPANY_ADMIN, LEGAL_REPRESENTATIVE, PLATFORM_MANAGER, INITIAL_REPRESENTATIVE, PUBLISHER))
+            if (!identityService.hasAnyRole(bearer, COMPANY_ADMIN, LEGAL_REPRESENTATIVE, PLATFORM_MANAGER,
+                    INITIAL_REPRESENTATIVE, PUBLISHER))
                 return new ResponseEntity<>("You are not allowed to delete an account", HttpStatus.FORBIDDEN);
 
             boolean deleted = this.stripeClient.deleteAccount(id);
@@ -121,7 +136,24 @@ public class StripeController {
             return ResponseEntity.ok(deleted);
         } catch (Exception e) {
             logger.error("Unexpected error while deleting Stripe account:", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error while deleting Stripe account");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error while deleting Stripe account");
+        }
+    }
+
+    @RequestMapping(value = "/create-checkout-session/{priceId}", method = RequestMethod.POST)
+    public ResponseEntity checkout(
+            @ApiParam(value = "Id of account to be deleted.", required = true) @PathVariable(value = "priceId", required = true) String priceId,
+            @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+        try {
+            response.sendRedirect(this.stripeClient.createCheckout(priceId));
+            return ResponseEntity.ok("");
+        } catch (Exception e) {
+            logger.error("Unexpected error while create checkout session:", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error while create checkout session:");
         }
     }
 

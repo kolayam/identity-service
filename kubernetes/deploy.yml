@@ -124,7 +124,7 @@ spec:
           - name: DISCOVERY_PREFER_IP
             value: "false"
           - name: FRONTEND_URL
-            value: "https://nimble.kolayam.co.uk"
+            value: "https://www.kolayam.co.uk"
           - name: CATALOGUE_SERVICE_URL
             value: "http://catalog-service-srdc:8095"
           - name: BUSINESS_PROCESS_SERVICE_URL

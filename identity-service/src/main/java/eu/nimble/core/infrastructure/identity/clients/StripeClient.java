@@ -118,6 +118,7 @@ public class StripeClient {
 
 
     public String createCheckout(String priceId){
+        Stripe.apiKey = stripeSecretKey;
         String YOUR_DOMAIN = this.frontendUrl;
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.SUBSCRIPTION)

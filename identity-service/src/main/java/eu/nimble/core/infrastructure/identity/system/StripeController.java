@@ -6,10 +6,8 @@ import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.LEGAL_
 import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.PLATFORM_MANAGER;
 import static eu.nimble.core.infrastructure.identity.uaa.OAuthClient.Role.PUBLISHER;
 
+import java.util.Collections;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,15 +139,12 @@ public class StripeController {
         }
     }
 
-    @RequestMapping(value = "/create-checkout-session/{priceId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/create-checkout-session/{priceId}", method = RequestMethod.GET)
     public ResponseEntity checkout(
             @ApiParam(value = "Id of account to be deleted.", required = true) @PathVariable(value = "priceId", required = true) String priceId,
-            @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+            @ApiParam(value = "The Bearer token provided by the identity service", required = true) @RequestHeader(value = "Authorization") String bearer) {
         try {
-            response.sendRedirect(this.stripeClient.createCheckout(priceId));
-            return ResponseEntity.ok("");
+            return ResponseEntity.ok(Collections.singletonMap("url", this.stripeClient.createCheckout(priceId)));
         } catch (Exception e) {
             logger.error("Unexpected error while create checkout session:", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

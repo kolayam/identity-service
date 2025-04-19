@@ -56,19 +56,19 @@ spec:
           - name: KAFKA_JAAS_CONFIG
             value: ""
           - name: SMTP_HOST
-            value: "smtp.gmail.com"
+            value: "maildev"
           - name: SMTP_PORT
-            value: "587"
+            value: "25"
           - name: SMTP_DEFAULT_FROM
             value: "support@kolanot.co.uk"
           - name: SMTP_USERNAME
-            value: "support@kolanot.co.uk"
+            value: ""
           - name: SMTP_PASSWORD
-            value: "lzuqcjludynkrtvd"
+            value: ""
           - name: SMTP_AUTH
-            value: "true"
+            value: "false"
           - name: SMTP_STARTTLS
-            value: "true"
+            value: "false"
           - name: KEYCLOAK_URL
             value: "http://keycloak:8080/auth"
           - name: KEYCLOAK_REALM

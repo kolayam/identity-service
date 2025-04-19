@@ -55,6 +55,8 @@ spec:
             value: "my-cluster-kafka-bootstrap:9092"
           - name: KAFKA_JAAS_CONFIG
             value: ""
+          - name: MAIL_DEBUG
+            value: "true"
           - name: SMTP_HOST
             value: "maildev"
           - name: SMTP_PORT

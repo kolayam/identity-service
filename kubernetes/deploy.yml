@@ -28,7 +28,7 @@ spec:
           - name: POSTGRES_HOST
             value: "kola-postgress-do-user-13910731-0.c.db.ondigitalocean.com"
           - name: POSTGRES_PORT
-            value: "25060"
+            value: "25061"
           - name: POSTGRES_DB
             value: "identitydb"
           - name: POSTGRES_USER
@@ -40,7 +40,7 @@ spec:
           - name: BINARY_CONTENT_DB_HOST
             value: "kola-postgress-do-user-13910731-0.c.db.ondigitalocean.com"
           - name: BINARY_CONTENT_DB_PORT
-            value: "25060"
+            value: "25061"
           - name: BINARY_CONTENT_DB_NAME
             value: "binarycontentdb"
           - name: BINARY_CONTENT_DB_USERNAME

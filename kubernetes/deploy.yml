@@ -48,7 +48,7 @@ spec:
           - name: BINARY_CONTENT_DB_PASSWORD
             value: "AVNS_xN6h3TZAvlOwe4vdAdk"
           - name: BINARY_CONTENT_DB_PARAMS
-            value: "&ssl=true&sslmode=require"
+            value: "ssl=true&sslmode=require"
           - name: BINARY_CONTENT_URL
             value: "http://not-yet-in-use/"
           - name: KAFKA_BOOTSTRAP_SERVERS

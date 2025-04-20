@@ -32,7 +32,7 @@ spring:
     username: ${POSTGRES_USER:root}
     password: ${POSTGRES_PASSWORD:changeme}
     binarycontentdb:
-      url: jdbc:postgresql://${BINARY_CONTENT_DB_HOST:localhost}:${BINARY_CONTENT_DB_PORT:5432}/${BINARY_CONTENT_DB_NAME:binarycontentdb}?currentSchema=public${BINARY_CONTENT_DB_PARAMS:}
+      url: jdbc:postgresql://${BINARY_CONTENT_DB_HOST:localhost}:${BINARY_CONTENT_DB_PORT:5432}/${BINARY_CONTENT_DB_NAME:binarycontentdb}?${BINARY_CONTENT_DB_PARAMS:}
       username: ${BINARY_CONTENT_DB_USERNAME:postgres}
       password: ${BINARY_CONTENT_DB_PASSWORD:nimble}
       driverClassName: org.postgresql.Driver

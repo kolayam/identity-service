@@ -14,6 +14,7 @@ spec:
     metadata:
       labels:
         app: identity-service
+    dnsPolicy: ClusterFirst
     spec:
       containers:
       - image: 'rannybal2024/identity-service:IMAGE_TAG'
@@ -24,7 +25,7 @@ spec:
           protocol: TCP
         env:
           - name: _JAVA_OPTIONS
-            value: "-Xmx128m -Xms50m -Deureka.instance.leaseRenewalIntervalInSeconds=30"
+            value: "-Xmx512m -Xms50m -Deureka.instance.leaseRenewalIntervalInSeconds=30"
           - name: POSTGRES_HOST
             value: "kola-postgress-do-user-13910731-0.c.db.ondigitalocean.com"
           - name: POSTGRES_PORT
@@ -36,7 +37,10 @@ spec:
           - name: POSTGRES_PARAMS
             value: "&ssl=true&sslmode=require"
           - name: POSTGRES_PASSWORD
-            value: "AVNS_xN6h3TZAvlOwe4vdAdk"
+            valueFrom:
+              secretKeyRef:
+                name: db-secrets
+                key: PG_DOADMIN_PASSWORD
           - name: BINARY_CONTENT_DB_HOST
             value: "kola-postgress-do-user-13910731-0.c.db.ondigitalocean.com"
           - name: BINARY_CONTENT_DB_PORT
@@ -46,7 +50,10 @@ spec:
           - name: BINARY_CONTENT_DB_USERNAME
             value: "doadmin"
           - name: BINARY_CONTENT_DB_PASSWORD
-            value: "AVNS_xN6h3TZAvlOwe4vdAdk"
+            valueFrom:
+              secretKeyRef:
+                name: db-secrets
+                key: PG_DOADMIN_PASSWORD
           - name: BINARY_CONTENT_DB_PARAMS
             value: "ssl=true&sslmode=require"
           - name: BINARY_CONTENT_URL
@@ -78,23 +85,38 @@ spec:
           - name: KEYCLOAK_ADMIN_USERNAME
             value: "admin"
           - name: KEYCLOAK_ADMIN_PASSWORD
-            value: "123456"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: KEYCLOAK_ADMIN_PASSWORD
           - name: KEYCLOAK_ADMIN_CLIENT_ID
             value: "admin-cli"
           - name: KEYCLOAK_ADMIN_CLIENT_SECRET
-            value: "18f8ba5e-4602-4776-8b50-f8e5116c48f7"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: KEYCLOAK_ADMIN_CLIENT_SECRET
           - name: CATALOG_SERVICE_OAUTH_CLIENT_ID
             value: "catalog-service-client"
           - name: CATALOG_SERVICE_OAUTH_SECRET
-            value: "09eae741-0684-4798-b728-aa6a8e59ca71"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: CATALOG_SERVICE_OAUTH_SECRET
           - name: BP_SERVICE_OAUTH_CLIENT_ID
             value: "bp-service-client"
           - name: BP_SERVICE_OAUTH_SECRET
-            value: "621c1ec2-6753-4ead-925f-a5df24876a2b"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: BP_SERVICE_OAUTH_SECRET
           - name: OAUTH_CLIENT_ID
             value: "nimble_client"
           - name: OAUTH_CLIENT_SECRET
-            value: "710ac188-637b-4373-a237-d83765d07893"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: OAUTH_CLIENT_SECRET
           - name: OAUTH_CLIENT_ACCESSTOKEN_URI
             value: "http://keycloak:8080/auth/realms/master/protocol/openid-connect/token"
           - name: SUPPORT_EMAIL
@@ -108,11 +130,17 @@ spec:
           - name: ROCKET_CHAT_USER
             value: "support@kolanot.co.uk"
           - name: ROCKET_CHAT_PASSWORD
-            value: "123456"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: ROCKET_CHAT_PASSWORD
           - name: INDEXING_SERVICE_URL
             value: "http://indexing-service:8080/"
           - name: KEYCLOAK_PUBLIC_KEY
-            value: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjbTzPIh+ff5lTVW0c4veuS3Ers+29+h9mXXcwkojaDRwzHmf1ZCVvJY3eNy6NCu0SwVksA2tusBZK+qiSo4Kk24DDTNz1JQ7HDvXzTxH6Vfz8vPC9qq+kOPBqUOXctlNTiyz+8uEA6rS1ZpzcbVOdds0xx9k0pSlZhXxbeJlq+m8nS5cWNiAMnS4Z0UQDJXNL5Y8a4z8XTPlX5cv9B2cikQpQ97grnUQ1ihAs+7gw6Jo1DyU+6V1KEYK89yPtn8bSvsgVSIx0g97kBS7c2EhmqBgQ5h5zXW7nLXTiNE+va7Gk0Bfaf6jw5j8p5/uigrRlmgoTQxvgE7oiviJA18ZTQIDAQAB"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: KEYCLOAK_PUBLIC_KEY_1
           - name: FEDERATION_INSTANCE_ID
             value: "kerberos"
           - name: DISCOVERY_ENABLED
@@ -132,7 +160,10 @@ spec:
           - name: BUSINESS_PROCESS_SERVICE_URL
             value: "http://business-process-service:8081"
           - name: STRIPE_SECRET_KEY
-            value: "sk_test_51NYrpWDm3eNdEyUnTxNx27CcIFD22jjnT3zqtt8MAQGzsP1oe6rGqdhQgsaZKR7EtOSPznIEw80rBE0G65jLEQ8I006Oy5RGOc"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-secrets
+                key: STRIPE_SECRET_KEY
           - name: STRIPE_REFRESH_URL
             value: "https://www.kolayam.co.uk/#/user-mgmt/company-settings"
           - name: STRIPE_RETURN_URL
@@ -146,4 +177,5 @@ spec:
             cpu: 200m
             memory: 512Mi
           limits:
+            cpu: 500m
             memory: 1024Mi

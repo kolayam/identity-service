@@ -14,8 +14,8 @@ spec:
     metadata:
       labels:
         app: identity-service
-    dnsPolicy: ClusterFirst
     spec:
+      dnsPolicy: ClusterFirst
       containers:
       - image: 'rannybal2024/identity-service:IMAGE_TAG'
         name: identity-service
